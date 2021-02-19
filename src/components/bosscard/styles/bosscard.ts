@@ -50,10 +50,13 @@ export const BossFloor = styled.div`
   justify-content: center;
 `;
 
-export const Content = styled.div`
+export type ContentType = {
+  color: string;
+};
+export const Content = styled.div<ContentType>`
   display: flex;
   align-items: center;
-  background-color: black;
+  background-color: ${({ color }) => color};
   opacity: 0.5;
   flex-grow: 1;
 `;

@@ -11,6 +11,7 @@ import {
   RespawnSection,
   BossFloor,
   DeathInfo,
+  ContentType,
 } from "./styles/bosscard";
 
 const BossCard = ({
@@ -32,7 +33,7 @@ BossCard.BossFloor = ({ children, ...rest }: WithChildrenType) => {
   return <BossFloor {...rest}>{children}</BossFloor>;
 };
 
-BossCard.Content = ({ children, ...rest }: WithChildrenType) => {
+BossCard.Content = ({ children, ...rest }: WithChildrenType & ContentType) => {
   return (
     <Content {...rest}>
       <ContentInner>{children}</ContentInner>
