@@ -1,0 +1,7 @@
+name: netlifx-clone
+website:
+  component: '@serverless/website'
+  inputs:
+    code:
+      src: build
+      hook: npm run build
