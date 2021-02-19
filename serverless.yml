@@ -4,4 +4,4 @@ website:
   inputs:
     code:
       src: build
-      hook: npm run build
+      hook: yarn build

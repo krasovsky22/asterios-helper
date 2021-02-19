@@ -1,4 +1,5 @@
 {
   "bucketName": "krasovsky-asterios-helper-v2",
-  "region": "us-east-1"
+  "region": "us-east-1",
+  "url": "http://krasovsky-asterios-helper-v2.s3-website-us-east-1.amazonaws.com"
 }

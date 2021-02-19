@@ -3,10 +3,11 @@ import { ImageType } from "@components/common-types";
 
 export const Container = styled.div`
   color: #fff;
-  min-width: 500px;
+  width: 500px;
   width: 40%;
-  height: 300px;
+  height: 400px;
   display: flex;
+  flex: 0 40%;
 
   cursor: pointer;
   transition: transform 0.5s ease;
@@ -19,11 +20,13 @@ export const Inner = styled.div`
   display: flex;
   flex-direction: row;
   background-color: transparent;
+  width: 100%;
 `;
 
 export const Image = styled.div<ImageType>`
   background-image: url(${({ src }) => src});
-  width: 30%;
+  width: 20rem;
+  max-width: 25%;
   background-blend-mode: lighten;
   background-repeat: no-repeat;
   background-origin: content-box;
@@ -52,6 +55,7 @@ export const Content = styled.div`
   align-items: center;
   background-color: black;
   opacity: 0.5;
+  flex-grow: 1;
 `;
 
 export const ContentInner = styled.div`
