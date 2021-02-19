@@ -29,3 +29,9 @@ export const LoginSection = styled.div`
 `;
 export const SignInButton = styled.div``;
 export const SignUpButton = styled.div``;
+export const Clock = styled.div`
+  display: flex;
+  align-items: center;
+  color: #f0f0f0;
+  font-size: 1.5rem;
+`;

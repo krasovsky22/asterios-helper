@@ -7,6 +7,7 @@ const HeaderContainer: React.FC = () => {
   return (
     <Header>
       <Header.Logo src={LogoImage} alt="Lineage 2" />
+      <Header.Clock />
       <Header.LoginSection>Login</Header.LoginSection>
     </Header>
   );
