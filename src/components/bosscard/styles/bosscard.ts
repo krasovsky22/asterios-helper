@@ -87,6 +87,7 @@ export const RespawnSection = styled.div`
   width: 100%;
   padding-bottom: 10px;
   font-size: 17px;
+  font-size: 0.9vw;
 `;
 
 export const DeathInfo = styled.div`
