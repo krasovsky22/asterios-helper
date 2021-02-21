@@ -1,24 +1,33 @@
-import Discord = require('discord.js');
-import * as dotenv from 'dotenv';
+import * as Discord from 'discord.js';
 
-import { ChestCommand, ListBossesCommand } from './commands';
+import { ChestCommand, ListBossesCommand, UpCommand } from './commands';
 import { prefix } from './config.json';
 
-dotenv.config();
+const COMMANDS_CHANNEL = process.env.DISCORD_COMMANDS_CHANNEL;
+const VOICE_CHANNEL_TO_JOIN = process.env.DISCORD_VOICE_CHANNEL;
 
 const DiscordClient = new Discord.Client();
 
-DiscordClient.once('ready', () => {
+DiscordClient.once('ready', async () => {
   console.log('Ready!');
+
+  const voiceChannel = DiscordClient.channels.cache.find((channel) => {
+    const tChannel = channel as Discord.GuildChannel;
+    return tChannel.type === 'voice' && tChannel.name === VOICE_CHANNEL_TO_JOIN;
+  }) as Discord.VoiceChannel;
+
+  voiceChannel && voiceChannel.join();
 });
 
 function getAvailableCommands() {
-  return [ListBossesCommand, ChestCommand];
+  return [ListBossesCommand, ChestCommand, UpCommand];
 }
 
 DiscordClient.on('message', async (message) => {
   if (message.author.bot) return;
 
+  const messageChannel = message.channel as Discord.TextChannel;
+  if (messageChannel.name !== COMMANDS_CHANNEL) return;
   if (!message.content.startsWith(prefix)) return;
 
   const commandBody = message.content.slice(prefix.length).split(' ');
@@ -36,6 +45,10 @@ DiscordClient.on('message', async (message) => {
           .join('\n');
       break;
     }
+    case UpCommand.command: {
+      commandResponse = UpCommand.execute(args, DiscordClient);
+      break;
+    }
     case ListBossesCommand.command: {
       commandResponse = ListBossesCommand.execute();
       break;
@@ -50,7 +63,7 @@ DiscordClient.on('message', async (message) => {
       break;
   }
 
-  message.channel.send(commandResponse);
+  commandResponse && message.channel.send(commandResponse);
 });
 
 export default DiscordClient;
