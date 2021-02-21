@@ -1,22 +1,24 @@
-import Firebase from "firebase/app";
+/* eslint-disable camelcase */
+export type DiscordResponseType = {
+  access_token?: string;
+  expires_in?: number;
+  expires_at?: string;
+  refresh_token?: string;
+  scope?: string;
+  token_type?: string;
+  error?: string;
+  error_description?: string;
+};
 
-export type UserType = Firebase.User;
-export type AuthUserType = UserType | null;
-
-export type DatabaseContentType = {
+export type DiscordUserType = {
+  avatar: null;
+  discriminator: string;
+  email: string;
+  flags: number;
   id: string;
-  title: string;
-  description: string;
-  genre: string;
-  maturity: number;
-  slug: string;
-};
-
-export type NetflixContentType = DatabaseContentType & {
-  docId: string;
-};
-
-export type NetflixProfileType = {
-  displayName: string | null;
-  photoURL: string | null;
+  locale: string;
+  mfa_enabled: boolean;
+  public_flags: number;
+  username: string;
+  verified: boolean;
 };

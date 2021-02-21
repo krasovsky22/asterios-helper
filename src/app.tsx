@@ -1,26 +1,17 @@
-import { Home } from "@/pages";
+import { AuthenticateCallback, Home } from "@/pages";
 import React from "react";
-import { BrowserRouter as Router, Switch } from "react-router-dom";
+import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 
 const App: React.FC = () => {
   return (
     <Router>
       <Switch>
-        {/* <IsUserRedirect user={user} loggedInPath={ROUTES.BROWSE} path={ROUTES.SIGN_UP} exact>
-          <SignUp />
-        </IsUserRedirect>
-
-        <IsUserRedirect user={user} loggedInPath={ROUTES.BROWSE} path={ROUTES.SIGN_IN} exact>
-          <SignIn />
-        </IsUserRedirect>
-
-        <IsUserRedirect user={user} loggedInPath={ROUTES.BROWSE} path={ROUTES.HOME} exact> */}
-        <Home />
-        {/* </IsUserRedirect>
-
-        <ProtectedRoute exact path={ROUTES.BROWSE} user={user}>
-          <Browse />
-        </ProtectedRoute> */}
+        <Route exact path="/authenticate-callback">
+          <AuthenticateCallback />
+        </Route>
+        <Route exact path="/">
+          <Home />
+        </Route>
       </Switch>
     </Router>
   );

@@ -8,12 +8,15 @@ import { FirebaseContext } from "@context/firebase";
 import { firebase } from "@/lib/firebase";
 
 import "normalize.css";
+import { AuthStateProvider } from "@context/auth";
 
 ReactDOM.render(
   <React.StrictMode>
     <FirebaseContext.Provider value={{ firebase }}>
       <GlobalStyles />
-      <App />
+      <AuthStateProvider>
+        <App />
+      </AuthStateProvider>
     </FirebaseContext.Provider>
   </React.StrictMode>,
   document.getElementById("root"),

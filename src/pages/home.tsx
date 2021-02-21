@@ -4,6 +4,7 @@ import styled from "styled-components/macro";
 import { ToastContainer } from "react-toastify";
 
 import "react-toastify/dist/ReactToastify.css";
+import { useAuthContext } from "@context/auth";
 
 const PageContainer = styled.div`
   display: flex;
@@ -34,6 +35,8 @@ const Inner = styled.div`
 `;
 
 const Home: React.FC = () => {
+  const { user } = useAuthContext();
+  console.log("asdasd", user);
   return (
     <PageContainer>
       <HeaderContainer />

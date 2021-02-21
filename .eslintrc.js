@@ -16,6 +16,7 @@ module.exports = {
     "no-empty-pattern": ["off"],
     "no-undef": ["error"],
     "no-var": ["error"],
+    "multiline-ternary": "off",
     "object-curly-spacing": ["error", "always"],
     quotes: ["error", "double", { allowTemplateLiterals: true }],
     semi: ["error", "always"],

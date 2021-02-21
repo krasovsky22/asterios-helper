@@ -26,6 +26,7 @@ export const Logo = styled.img`
 export const LoginSection = styled.div`
   display: flex;
   align-items: center;
+  color: white;
 `;
 export const SignInButton = styled.div``;
 export const SignUpButton = styled.div``;
@@ -34,4 +35,9 @@ export const Clock = styled.div`
   align-items: center;
   color: #f0f0f0;
   font-size: 1.5rem;
+`;
+
+export const LoggedInUser = styled.div`
+  margin-left: 5px;
+  font-weight: bold;
 `;

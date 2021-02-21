@@ -100,12 +100,10 @@ const BossContainer: React.FC<BossContainerType> = ({ chest, name, image, floor 
         <BossCard.DeathInfo>{bossData.content}</BossCard.DeathInfo>
         <BossCard.RespawnSection>
           <div>
-            <b>Start Time:</b> {respawnStartTime.toLocaleDateString()}{" "}
-            {respawnStartTime.toLocaleTimeString()}
+            <b>Start Time:</b> {respawnStartTime.toLocaleString()}
           </div>
           <div>
-            <b>Until:</b> {respawnEndTime.toLocaleDateString()}{" "}
-            {respawnEndTime.toLocaleTimeString()}
+            <b>Until:</b> {respawnEndTime.toLocaleString()}
           </div>
         </BossCard.RespawnSection>
       </BossCard.Content>

@@ -9,6 +9,7 @@ import {
   SignInButton,
   SignUpButton,
   Clock,
+  LoggedInUser,
 } from "./styles/header";
 
 const Header = ({ children, ...rest }: WithChildrenType) => {
@@ -37,6 +38,10 @@ Header.Clock = ({ ...rest }) => {
 
 Header.LoginSection = ({ children, ...rest }: WithChildrenType) => {
   return <LoginSection {...rest}>{children}</LoginSection>;
+};
+
+Header.LoggedInUser = ({ children, ...rest }: WithChildrenType) => {
+  return <LoggedInUser {...rest}>{children}</LoggedInUser>;
 };
 
 Header.SignInButton = ({ children, ...rest }: WithChildrenType) => {
