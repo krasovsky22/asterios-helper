@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "skipLibCheck": true,
     "module": "commonjs",
     "noImplicitReturns": true,
     "noUnusedLocals": true,
@@ -11,5 +12,6 @@
   "compileOnSave": true,
   "include": [
     "src"
-  ]
+  ],
+  "exclude": ["node_modules", "../node_modules"]
 }
