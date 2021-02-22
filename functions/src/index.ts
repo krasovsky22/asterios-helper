@@ -13,6 +13,7 @@ const asteriosBosses = [
 ];
 
 const bossesCollection = admin.firestore().collection("bosses");
+const usersRatingCollection = admin.firestore().collection("users");
 
 export const parseMainFeed = functions.https.onRequest(async (req, res) => {
   const { id } = req.query;
@@ -28,9 +29,7 @@ export const parseMainFeed = functions.https.onRequest(async (req, res) => {
 
   const { items } = feed;
   if (!items) {
-    res
-      .status(500)
-      .json({ error: "Unable to get last build date from Asterios" });
+    res.status(500).json({ error: "Unable to get last build date from Asterios" });
     return;
   }
 
@@ -49,15 +48,27 @@ export const parseMainFeed = functions.https.onRequest(async (req, res) => {
           return doc.data();
         }
 
-        return;
+        return null;
       });
 
-    if (prevBossData && bossData["pubDate"]) {
+    if (prevBossData && bossData.pubDate) {
       const prevPubDate = new Date(prevBossData.pubDate);
-      const currentPubDate = new Date(bossData["pubDate"]);
+      const currentPubDate = new Date(bossData.pubDate);
 
       if (prevPubDate < currentPubDate) {
         console.log(`New ${boss} kill detected. Updating...`);
+        const peopleToUpdate = prevBossData?.markedAsSpawned ?? [];
+
+        peopleToUpdate.map(async (personId: string) => {
+          const currentRating = (await usersRatingCollection
+            .doc(personId)
+            .get()
+            .then((doc) => (doc.exists ? doc.data() : null))) ?? { rating: 0 };
+
+          console.log(`Increasing rating for user. ${personId}`);
+          await usersRatingCollection.doc(personId).set({ rating: currentRating.rating + 1 });
+        });
+
         await bossesCollection.doc(boss).set(bossData);
       }
     } else {
@@ -66,5 +77,4 @@ export const parseMainFeed = functions.https.onRequest(async (req, res) => {
   });
 
   res.json({ error: "Done" });
-  return;
 });
