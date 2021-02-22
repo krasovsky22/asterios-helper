@@ -4,6 +4,7 @@ import useContent from "@hooks/use-content";
 import { BOSS_TYPE } from "@constants/bosses";
 import { toast } from "react-toastify";
 import { useInterval } from "beautiful-react-hooks";
+import { useAuthContext } from "@context/auth";
 
 type BossContainerType = {
   name: BOSS_TYPE;
@@ -24,7 +25,8 @@ const DefaultState: StateType = {
 
 const BossContainer: React.FC<BossContainerType> = ({ chest, name, image, floor = null }) => {
   const [state, setState] = useState<StateType>(DefaultState);
-  const bossData = useContent(name)!;
+  const { bossData, markBossAsSpawned } = useContent(name)!;
+  const { user } = useAuthContext();
 
   //copy into clipboard
   const handleOnClick = useCallback(() => {
@@ -44,11 +46,11 @@ const BossContainer: React.FC<BossContainerType> = ({ chest, name, image, floor 
     );
   }, []);
 
-  const killedAt = new Date(bossData && bossData.pubDate);
-  const respawnStartTime = new Date(bossData && bossData.pubDate);
+  const killedAt = new Date(bossData?.pubDate ?? "");
+  const respawnStartTime = new Date(bossData?.pubDate ?? "");
   respawnStartTime.setHours(respawnStartTime.getHours() + 18);
 
-  const respawnEndTime = new Date(bossData && bossData.pubDate);
+  const respawnEndTime = new Date(bossData?.pubDate ?? "");
   respawnEndTime.setHours(respawnStartTime.getHours() + 30);
 
   useInterval(() => {
@@ -62,18 +64,40 @@ const BossContainer: React.FC<BossContainerType> = ({ chest, name, image, floor 
     }
 
     if (now > respawnEndTime) {
-      setState({ isSpawning: false, isSpawned: true });
+      setState({ ...state, isSpawning: false, isSpawned: true });
       return;
     }
 
     setState(DefaultState);
   }, 1000);
 
+  const handleMarkAsSpawned = useCallback(async () => {
+    if (!state.isSpawning) {
+      return toast.error(
+        <div>
+          <b>Boss hasn't spawned yet!</b> <br />
+          Penalties may apply.
+        </div>,
+      );
+    }
+
+    const result = await markBossAsSpawned();
+
+    if (result) {
+      return toast.success(
+        <div>
+          <b>Thank you!</b>
+        </div>,
+      );
+    }
+  }, [bossData, state.isSpawning]);
+
   if (!bossData) {
     return null;
   }
 
   const { isSpawned, isSpawning } = state;
+  const isMarkedSpawnedByMe = bossData.markedAsSpawned?.includes(user?.id ?? "") ?? false;
   let color = "black";
 
   if (isSpawning) {
@@ -98,6 +122,14 @@ const BossContainer: React.FC<BossContainerType> = ({ chest, name, image, floor 
           </p>
         </BossCard.DeathSection>
         <BossCard.DeathInfo>{bossData.content}</BossCard.DeathInfo>
+        {user && isSpawning && (
+          <BossCard.ActionButtonsSection
+            isToggled={isMarkedSpawnedByMe}
+            onClick={handleMarkAsSpawned}
+          >
+            {isMarkedSpawnedByMe ? "Notified!" : "Mark as spawned."}
+          </BossCard.ActionButtonsSection>
+        )}
         <BossCard.RespawnSection>
           <div>
             <b>Start Time:</b> {respawnStartTime.toLocaleString()}

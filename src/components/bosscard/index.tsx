@@ -12,6 +12,9 @@ import {
   BossFloor,
   DeathInfo,
   ContentType,
+  ActionButtonsSection,
+  ActionButtonSectionInner,
+  ActionToggle,
 } from "./styles/bosscard";
 
 const BossCard = ({
@@ -57,4 +60,31 @@ BossCard.RespawnSection = ({ children, ...rest }: WithChildrenType) => {
   return <RespawnSection {...rest}>{children}</RespawnSection>;
 };
 
+type ActionButtonSelection = {
+  onClick: () => void;
+  isToggled: boolean;
+};
+BossCard.ActionButtonsSection = ({
+  onClick,
+  isToggled = false,
+  children,
+  ...rest
+}: ActionButtonSelection & WithChildrenType) => {
+  const clickHandler = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+    event.preventDefault();
+    event.stopPropagation();
+    onClick();
+  };
+  return (
+    <ActionButtonsSection
+      {...rest}
+      onClick={(event) => clickHandler(event)}
+      color={isToggled ? "green" : "#ff1177"}
+    >
+      <ActionButtonSectionInner>
+        <ActionToggle {...rest}>{children}</ActionToggle>
+      </ActionButtonSectionInner>
+    </ActionButtonsSection>
+  );
+};
 export default BossCard;

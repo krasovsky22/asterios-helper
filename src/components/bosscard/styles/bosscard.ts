@@ -97,3 +97,49 @@ export const DeathInfo = styled.div`
   flex-grow: 1;
   font-size: 1.1rem;
 `;
+
+export const ActionToggle = styled.p`
+  color: #fff;
+  font-family: Monoton;
+  -webkit-animation: neon1 1.5s ease-in-out infinite alternate;
+  animation: neon1 1.5s ease-in-out infinite alternate;
+  transition: all 0.5s;
+`;
+
+type ActionButtonsSectionType = {
+  color: string;
+};
+export const ActionButtonsSection = styled.div<ActionButtonsSectionType>`
+  align-self: flex-start;
+  flex-grow: 1;
+  width: 100%;
+  height: 100%;
+  z-index: 999;
+  display: flex;
+  align-items: center;
+
+  border: 5px solid ${({ color }) => color};
+  border-radius: 50px;
+
+  ${ActionToggle} {
+    ${({ color }) => `@keyframes neon1 {
+    from {
+      text-shadow: 0 0 10px #fff, 0 0 20px #fff, 0 0 30px #fff, 0 0 40px ${color}, 0 0 70px ${color},
+        0 0 80px ${color}, 0 0 100px ${color}, 0 0 150px ${color};
+    }
+    to {
+      text-shadow: 0 0 5px #fff, 0 0 10px #fff, 0 0 15px #fff, 0 0 20px ${color}, 0 0 35px ${color},
+        0 0 40px ${color}, 0 0 50px ${color}, 0 0 75px ${color};
+    }
+  }`}
+  }
+`;
+export const ActionButtonSectionInner = styled.div`
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: 30px;
+`;
