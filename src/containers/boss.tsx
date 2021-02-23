@@ -48,10 +48,11 @@ const BossContainer: React.FC<BossContainerType> = ({ chest, name, image, floor 
 
   const killedAt = new Date(bossData?.pubDate ?? "");
   const respawnStartTime = new Date(bossData?.pubDate ?? "");
-  respawnStartTime.setTime(respawnStartTime.getTime() + 18 * 60 * 60 * 1000);
+
+  respawnStartTime.setTime(killedAt.getTime() + 18 * 60 * 60 * 1000);
 
   const respawnEndTime = new Date(bossData?.pubDate ?? "");
-  respawnEndTime.setTime(respawnStartTime.getTime() + 30 * 60 * 60 * 1000);
+  respawnEndTime.setTime(killedAt.getTime() + 30 * 60 * 60 * 1000);
 
   useInterval(() => {
     const now = new Date();
