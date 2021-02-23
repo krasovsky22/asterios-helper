@@ -5,7 +5,7 @@ import { useAuthContext } from "@context/auth";
 
 const HeaderContainer: React.FC = () => {
   const { user } = useAuthContext();
-  console.log("header", user);
+
   return (
     <Header>
       <Header.Logo src={LogoImage} alt="Lineage 2" />

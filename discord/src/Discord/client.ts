@@ -2,11 +2,19 @@ import * as Discord from 'discord.js';
 
 import { ChestCommand, ListBossesCommand, UpCommand } from './commands';
 import { prefix } from './config.json';
+import { handleDataUpdate } from './firebase';
 
 const COMMANDS_CHANNEL = process.env.DISCORD_COMMANDS_CHANNEL;
 const VOICE_CHANNEL_TO_JOIN = process.env.DISCORD_VOICE_CHANNEL;
 
 const DiscordClient = new Discord.Client();
+
+export type BossDataType = {
+  markedAsSpawned?: string[];
+  title: string;
+  pubDate: string;
+};
+type ACTION_TYPES = 'NEW_DEATH' | 'NEW_REPORT';
 
 DiscordClient.once('ready', async () => {
   console.log('Ready!');
@@ -16,7 +24,49 @@ DiscordClient.once('ready', async () => {
     return tChannel.type === 'voice' && tChannel.name === VOICE_CHANNEL_TO_JOIN;
   }) as Discord.VoiceChannel;
 
+  const asteriosBotTextChannel = DiscordClient.channels.cache.find(
+    (channel) => {
+      const tChannel = channel as Discord.GuildChannel;
+      return tChannel.name === COMMANDS_CHANNEL;
+    }
+  ) as Discord.TextChannel;
   voiceChannel && voiceChannel.join();
+
+  handleDataUpdate(
+    (bossData: BossDataType, bossName: string, action_type: ACTION_TYPES) => {
+      console.log('recieved', bossData, action_type);
+
+      UpCommand.execute([bossName], DiscordClient);
+
+      if (action_type === 'NEW_REPORT') {
+        asteriosBotTextChannel.send(
+          `Someone reported that ${bossName} just spawned.`
+        );
+
+        //gather everyone that reported this boss
+        const usersReported = [];
+        bossData.markedAsSpawned.map((userReported) => {
+          const guildMember = asteriosBotTextChannel.guild.members.cache.get(
+            userReported
+          );
+          console.log(guildMember.user);
+
+          const nick =
+            guildMember?.nickname ?? guildMember?.user.username ?? null;
+          if (nick) {
+            usersReported.push(nick);
+          }
+        });
+
+        usersReported.length > 0 &&
+          asteriosBotTextChannel.send(
+            `Please, thank following people for reporting... ${usersReported.join(
+              ' ,'
+            )}`
+          );
+      }
+    }
+  );
 });
 
 function getAvailableCommands() {

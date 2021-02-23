@@ -35,8 +35,6 @@ const Inner = styled.div`
 `;
 
 const Home: React.FC = () => {
-  const { user } = useAuthContext();
-  console.log("asdasd", user);
   return (
     <PageContainer>
       <HeaderContainer />

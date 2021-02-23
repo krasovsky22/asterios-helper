@@ -1,4 +1,4 @@
-name: netlifx-clone
+name: asterios-helper
 website:
   component: '@serverless/website'
   inputs:

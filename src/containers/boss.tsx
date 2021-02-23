@@ -48,19 +48,21 @@ const BossContainer: React.FC<BossContainerType> = ({ chest, name, image, floor 
 
   const killedAt = new Date(bossData?.pubDate ?? "");
   const respawnStartTime = new Date(bossData?.pubDate ?? "");
-  respawnStartTime.setHours(respawnStartTime.getHours() + 18);
+  respawnStartTime.setTime(respawnStartTime.getTime() + 18 * 60 * 60 * 1000);
 
   const respawnEndTime = new Date(bossData?.pubDate ?? "");
-  respawnEndTime.setHours(respawnStartTime.getHours() + 30);
+  respawnEndTime.setTime(respawnStartTime.getTime() + 30 * 60 * 60 * 1000);
 
   useInterval(() => {
     const now = new Date();
-    if (name === "Boss Death Lord Hallate") {
-      console.log(now, respawnStartTime);
-    }
+
     if (now > respawnStartTime && now < respawnEndTime) {
       setState({ ...state, isSpawning: true });
       return;
+    }
+
+    if (name === "Boss Death Lord Hallate") {
+      console.log(name, now, respawnEndTime);
     }
 
     if (now > respawnEndTime) {
