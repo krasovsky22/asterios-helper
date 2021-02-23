@@ -3,11 +3,11 @@ import { findBossNameByFloor } from '../constants';
 import { Command } from './command-type';
 import { playSoundQueue } from './utils/sound-player';
 
-const BOSS_SPAWN_SOUND =
-  'https://discord-audio-files.s3-us-west-1.amazonaws.com/pioneer.mp3';
+const BOSS_DEATH_SOUND =
+  'https://www.myinstants.com/media/sounds/pornhub-community-intro.mp3';
 
 const UpCommand: Command = {
-  command: 'up',
+  command: 'kill',
   description:
     'Will create voice notification what boss spawned. Parameters: cabrio, 3, 8, 11',
   execute: (args, client) => {
@@ -22,15 +22,14 @@ const UpCommand: Command = {
 
     const connection = client.voice.connections.first();
 
-    const queueToPlay = [BOSS_SPAWN_SOUND];
+    const queueToPlay = [BOSS_DEATH_SOUND];
 
     playSoundQueue(connection, queueToPlay).then(() => {
       console.log('sounds done');
     });
 
     const bossName = findBossNameByFloor(boss === 'cabrio' ? 0 : +boss);
-
-    return `${bossName} just spawned. `;
+    return `${bossName} just died.`;
   },
 };
 

@@ -1,4 +1,5 @@
 import Firebase from 'firebase/app';
+
 import { BossDataType } from './client';
 
 require('firebase/firestore');

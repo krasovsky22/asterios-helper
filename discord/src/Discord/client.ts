@@ -1,7 +1,13 @@
 import * as Discord from 'discord.js';
 
-import { ChestCommand, ListBossesCommand, UpCommand } from './commands';
+import {
+  ChestCommand,
+  DeathCommand,
+  ListBossesCommand,
+  UpCommand,
+} from './commands';
 import { prefix } from './config.json';
+import BossData from './constants';
 import { handleDataUpdate } from './firebase';
 
 const COMMANDS_CHANNEL = process.env.DISCORD_COMMANDS_CHANNEL;
@@ -34,9 +40,8 @@ DiscordClient.once('ready', async () => {
 
   handleDataUpdate(
     (bossData: BossDataType, bossName: string, action_type: ACTION_TYPES) => {
-      console.log('recieved', bossData, action_type);
-
-      UpCommand.execute([bossName], DiscordClient);
+      const floor = BossData[bossName].floor;
+      UpCommand.execute([floor], DiscordClient);
 
       if (action_type === 'NEW_REPORT') {
         asteriosBotTextChannel.send(
@@ -49,7 +54,6 @@ DiscordClient.once('ready', async () => {
           const guildMember = asteriosBotTextChannel.guild.members.cache.get(
             userReported
           );
-          console.log(guildMember.user);
 
           const nick =
             guildMember?.nickname ?? guildMember?.user.username ?? null;
@@ -64,13 +68,18 @@ DiscordClient.once('ready', async () => {
               ' ,'
             )}`
           );
+      } else {
+        DeathCommand.execute([floor], DiscordClient);
+
+        asteriosBotTextChannel.send(`${bossName} just died. Chest command is:`);
+        asteriosBotTextChannel.send(`${BossData[bossName].chest}`);
       }
     }
   );
 });
 
 function getAvailableCommands() {
-  return [ListBossesCommand, ChestCommand, UpCommand];
+  return [ListBossesCommand, ChestCommand, UpCommand, DeathCommand];
 }
 
 DiscordClient.on('message', async (message) => {
@@ -97,6 +106,12 @@ DiscordClient.on('message', async (message) => {
     }
     case UpCommand.command: {
       commandResponse = UpCommand.execute(args, DiscordClient);
+      break;
+    }
+    case DeathCommand.command: {
+      const argsCopy = [...args];
+      commandResponse = DeathCommand.execute(args, DiscordClient);
+      commandResponse += '\n' + ChestCommand.execute(argsCopy);
       break;
     }
     case ListBossesCommand.command: {
