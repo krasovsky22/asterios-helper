@@ -109,9 +109,8 @@ DiscordClient.on('message', async (message) => {
       break;
     }
     case DeathCommand.command: {
-      const argsCopy = [...args];
-      commandResponse = DeathCommand.execute(args, DiscordClient);
-      commandResponse += '\n' + ChestCommand.execute(argsCopy);
+      commandResponse = DeathCommand.execute([...args], DiscordClient);
+      commandResponse += '\n' + ChestCommand.execute([...args]);
       break;
     }
     case ListBossesCommand.command: {

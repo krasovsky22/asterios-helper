@@ -1,3 +1,5 @@
+import BossData, { findBossNameByFloor } from '../constants';
+
 import { Command } from './command-type';
 
 const ChestCommand: Command = {
@@ -14,13 +16,11 @@ const ChestCommand: Command = {
       return 'Missing parameter.';
     }
 
-    const envValue = process.env[`CHEST_${boss.toUpperCase()}`];
-
-    if (!envValue) {
-      return 'Incorrect parameter detected. Available: cabrio, 3, 8, 11';
-    }
-
-    return envValue;
+    const bossName = findBossNameByFloor(boss === 'cabrio' ? 0 : +boss);
+    return (
+      BossData[bossName].chest ??
+      'Incorrect parameter detected. Available: cabrio, 3, 8, 11'
+    );
   },
 };
 

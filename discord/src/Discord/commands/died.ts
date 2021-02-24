@@ -14,7 +14,7 @@ const UpCommand: Command = {
     if (!args) {
       return 'Missing parameter.';
     }
-    const boss = args.shift();
+    const boss = [...args].shift();
 
     if (!boss) {
       return 'Missing parameter.';
