@@ -1,6 +1,6 @@
 import * as dotenv from 'dotenv';
-import express = require('express');
-import logger = require('morgan');
+import express from 'express';
+import * as logger from 'morgan';
 
 dotenv.config();
 
