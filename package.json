@@ -33,7 +33,8 @@
     "test": "react-app-rewired test",
     "eject": "react-app-rewired eject",
     "format": "prettier --write src/**/*.ts{,x}",
-    "lint": "eslint --fix src/**/*.ts{,x} "
+    "lint": "eslint --fix src/**/*.ts{,x} ",
+    "discord": "git subtree push --prefix discord heroku master"
   },
   "lint-staged": {
     "src/**/*.{js,jsx,ts,tsx,json,css,scss,md}": [
