@@ -17,6 +17,8 @@ const VOICE_CHANNEL_TO_JOIN = (process.env.DISCORD_VOICE_CHANNEL ?? '').split(
   '|'
 );
 
+console.log(VOICE_CHANNEL_TO_JOIN);
+
 const DiscordClient = new Discord.Client();
 
 export type BossDataType = {
