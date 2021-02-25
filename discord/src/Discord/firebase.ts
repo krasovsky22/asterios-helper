@@ -1,6 +1,7 @@
 import Firebase from 'firebase/app';
 
 import { BossDataType } from './client';
+import { POSSIBLE_BOSS } from './constants';
 
 require('firebase/firestore');
 require('firebase/auth');
@@ -19,6 +20,34 @@ const config = {
 const firebase = Firebase.initializeApp(config);
 
 const cachedResults = new Map<string, BossDataType>();
+
+export function userHasReportedAlready(
+  boss: POSSIBLE_BOSS,
+  userId: string
+): boolean {
+  const cachedBossData = cachedResults.get(boss);
+  const cachedReportedPeople = cachedBossData.markedAsSpawned ?? [];
+
+  return cachedReportedPeople.includes(userId);
+}
+
+export async function updateBossDocument(boss: POSSIBLE_BOSS, userId: string) {
+  if (userHasReportedAlready(boss, userId)) {
+    return false;
+  }
+
+  const cachedBossData = cachedResults.get(boss);
+  const cachedReportedPeople = cachedBossData.markedAsSpawned ?? [];
+
+  return await firebase
+    .firestore()
+    .collection('bosses')
+    .doc(boss)
+    .set({
+      ...cachedBossData,
+      markedAsSpawned: [...new Set([...cachedReportedPeople, userId])],
+    });
+}
 
 export function handleDataUpdate(callBack) {
   firebase

@@ -17,12 +17,18 @@ const BossData = {
   },
 };
 
-export function findBossNameByFloor(floor: number) {
+export type POSSIBLE_BOSS =
+  | "Boss Shilen's Messenger Cabrio"
+  | 'Boss Death Lord Hallate'
+  | 'Boss Kernon'
+  | 'Boss Longhorn Golkonda';
+
+export function findBossNameByFloor(floor: number): POSSIBLE_BOSS {
   const data = Object.entries(BossData).find(
     ([, value]) => value.floor === floor
   );
 
-  return data[0] ?? '';
+  return data[0] as POSSIBLE_BOSS;
 }
 
 export default BossData;

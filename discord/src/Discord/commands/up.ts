@@ -1,16 +1,13 @@
 import { findBossNameByFloor } from '../constants';
+import { updateBossDocument } from '../firebase';
 
 import { Command } from './command-type';
-import { playSoundQueue } from './utils/sound-player';
-
-const BOSS_SPAWN_SOUND =
-  'https://discord-audio-files.s3-us-west-1.amazonaws.com/pioneer.mp3';
 
 const UpCommand: Command = {
   command: 'up',
   description:
-    'Will create voice notification what boss spawned. Parameters: cabrio, 3, 8, 11',
-  execute: (args, client) => {
+    'Will create and update to database about boss spawned. Parameters: cabrio, 3, 8, 11',
+  execute: (args, _client, { userId }: { userId?: string }) => {
     if (!args) {
       return 'Missing parameter.';
     }
@@ -20,12 +17,14 @@ const UpCommand: Command = {
       return 'Missing parameter.';
     }
 
-    const queueToPlay = [BOSS_SPAWN_SOUND];
+    if (!userId) {
+      return '';
+    }
 
-    playSoundQueue(client, queueToPlay);
     const bossName = findBossNameByFloor(boss === 'cabrio' ? 0 : +boss);
+    updateBossDocument(bossName, userId);
 
-    return `${bossName} just spawned. `;
+    return '';
   },
 };
 

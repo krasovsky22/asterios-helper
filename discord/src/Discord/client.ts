@@ -4,6 +4,7 @@ import {
   ChestCommand,
   DeathCommand,
   ListBossesCommand,
+  SpawnCommand,
   UpCommand,
 } from './commands';
 import { prefix } from './config.json';
@@ -17,8 +18,6 @@ const VOICE_CHANNEL_TO_JOIN = (process.env.DISCORD_VOICE_CHANNEL ?? '').split(
   '|'
 );
 
-console.log(VOICE_CHANNEL_TO_JOIN);
-
 const DiscordClient = new Discord.Client();
 
 export type BossDataType = {
@@ -27,6 +26,8 @@ export type BossDataType = {
   pubDate: string;
 };
 type ACTION_TYPES = 'NEW_DEATH' | 'NEW_REPORT';
+
+let asteriosBotTextChannels;
 
 DiscordClient.once('ready', async () => {
   console.log('Ready');
@@ -43,20 +44,19 @@ DiscordClient.once('ready', async () => {
     tChannel.join();
   });
 
-  const asteriosBotTextChannels = DiscordClient.channels.cache.filter(
-    (channel) => {
-      const tChannel = channel as Discord.GuildChannel;
-      return COMMANDS_CHANNEL.includes(tChannel.name);
-    }
-  );
+  asteriosBotTextChannels = DiscordClient.channels.cache.filter((channel) => {
+    const tChannel = channel as Discord.GuildChannel;
+    return COMMANDS_CHANNEL.includes(tChannel.name);
+  });
 
   handleDataUpdate(
     (bossData: BossDataType, bossName: string, action_type: ACTION_TYPES) => {
       const floor = BossData[bossName].floor;
-      UpCommand.execute([floor], DiscordClient);
 
       if (action_type === 'NEW_REPORT') {
-        sentMessage(
+        //trigger spawn message
+        SpawnCommand.execute([floor], DiscordClient);
+        sendMessage(
           asteriosBotTextChannels,
           `Someone reported that ${bossName} just spawned.`
         );
@@ -77,7 +77,7 @@ DiscordClient.once('ready', async () => {
         });
 
         usersReported.length > 0 &&
-          sentMessage(
+          sendMessage(
             asteriosBotTextChannels,
             `Please, thank following people for reporting... ${usersReported.join(
               ' ,'
@@ -86,11 +86,10 @@ DiscordClient.once('ready', async () => {
       } else {
         DeathCommand.execute([floor], DiscordClient);
 
-        sentMessage(
+        sendMessage(
           asteriosBotTextChannels,
-          `${bossName} just died. Chest command is:`
+          `${bossName} just died. Chest command is: \n ${BossData[bossName].chest}`
         );
-        sentMessage(asteriosBotTextChannels, `${BossData[bossName].chest}`);
       }
     }
   );
@@ -111,7 +110,7 @@ function findUserReportedFromAllChannels(
   return searchUser;
 }
 
-function sentMessage(
+function sendMessage(
   channels: Discord.Collection<string, Discord.Channel>,
   message: string
 ) {
@@ -135,41 +134,45 @@ DiscordClient.on('message', async (message) => {
   const args = [...commandBody].slice(1);
   const command = [...commandBody].shift().toLowerCase();
 
-  let commandResponse;
   switch (command) {
     case 'commands': {
       const commands = getAvailableCommands();
-      commandResponse =
+      const messageText =
         'Available Commands: \n' +
         commands
           .map((command) => `${command.command}: ${command.description}`)
           .join('\n');
+
+      message.channel.send(messageText);
       break;
     }
     case UpCommand.command: {
-      commandResponse = UpCommand.execute(args, DiscordClient);
+      UpCommand.execute(args, DiscordClient, { userId: message.author.id });
+      const commandResponse = SpawnCommand.execute(args, DiscordClient);
+      commandResponse && sendMessage(asteriosBotTextChannels, commandResponse);
       break;
     }
     case DeathCommand.command: {
-      commandResponse = DeathCommand.execute([...args], DiscordClient);
+      let commandResponse = DeathCommand.execute([...args], DiscordClient);
       commandResponse += '\n' + ChestCommand.execute([...args]);
+      commandResponse && sendMessage(asteriosBotTextChannels, commandResponse);
       break;
     }
     case ListBossesCommand.command: {
-      commandResponse = ListBossesCommand.execute();
+      const commandResponse = ListBossesCommand.execute();
+      commandResponse && message.channel.send(commandResponse);
       break;
     }
     case ChestCommand.command: {
-      commandResponse = ChestCommand.execute(args);
+      const commandResponse = ChestCommand.execute(args);
+      commandResponse && message.channel.send(commandResponse);
       break;
     }
 
     default:
-      commandResponse = 'Unknown command';
+      message.channel.send('Unknown command');
       break;
   }
-
-  commandResponse && message.channel.send(commandResponse);
 });
 
 export default DiscordClient;
