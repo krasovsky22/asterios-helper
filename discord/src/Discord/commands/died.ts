@@ -10,7 +10,7 @@ const UpCommand: Command = {
   command: 'kill',
   description:
     'Will create voice notification what boss spawned. Parameters: cabrio, 3, 8, 11',
-  execute: async (args, client) => {
+  execute: (args, client) => {
     if (!args) {
       return 'Missing parameter.';
     }
@@ -24,7 +24,7 @@ const UpCommand: Command = {
 
     const bossName = findBossNameByFloor(boss === 'cabrio' ? 0 : +boss);
 
-    await playSoundQueue(client, queueToPlay);
+    playSoundQueue(client, queueToPlay);
 
     return `${bossName} just died.`;
   },
