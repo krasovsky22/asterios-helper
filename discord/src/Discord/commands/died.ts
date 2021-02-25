@@ -24,12 +24,12 @@ const UpCommand: Command = {
 
     const queueToPlay = [BOSS_DEATH_SOUND];
 
-    playSoundQueue(connection, queueToPlay).then(() => {
+    const bossName = findBossNameByFloor(boss === 'cabrio' ? 0 : +boss);
+    `${bossName} just died.`;
+
+    playSoundQueue(client, queueToPlay).then(() => {
       console.log('sounds done');
     });
-
-    const bossName = findBossNameByFloor(boss === 'cabrio' ? 0 : +boss);
-    return `${bossName} just died.`;
   },
 };
 

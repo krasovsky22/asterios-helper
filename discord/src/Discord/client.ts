@@ -10,8 +10,12 @@ import { prefix } from './config.json';
 import BossData from './constants';
 import { handleDataUpdate } from './firebase';
 
-const COMMANDS_CHANNEL = process.env.DISCORD_COMMANDS_CHANNEL;
-const VOICE_CHANNEL_TO_JOIN = process.env.DISCORD_VOICE_CHANNEL;
+const COMMANDS_CHANNEL = (process.env.DISCORD_COMMANDS_CHANNEL ?? '').split(
+  '|'
+);
+const VOICE_CHANNEL_TO_JOIN = (process.env.DISCORD_VOICE_CHANNEL ?? '').split(
+  '|'
+);
 
 const DiscordClient = new Discord.Client();
 
@@ -23,20 +27,26 @@ export type BossDataType = {
 type ACTION_TYPES = 'NEW_DEATH' | 'NEW_REPORT';
 
 DiscordClient.once('ready', async () => {
-  console.log('Ready!');
+  console.log('Ready');
 
-  const voiceChannel = DiscordClient.channels.cache.find((channel) => {
+  const voiceChannels = DiscordClient.channels.cache.filter((channel) => {
     const tChannel = channel as Discord.GuildChannel;
-    return tChannel.type === 'voice' && tChannel.name === VOICE_CHANNEL_TO_JOIN;
-  }) as Discord.VoiceChannel;
+    return (
+      tChannel.type === 'voice' && VOICE_CHANNEL_TO_JOIN.includes(tChannel.name)
+    );
+  });
 
-  const asteriosBotTextChannel = DiscordClient.channels.cache.find(
+  voiceChannels.map((channel) => {
+    const tChannel = channel as Discord.VoiceChannel;
+    tChannel.join();
+  });
+
+  const asteriosBotTextChannels = DiscordClient.channels.cache.filter(
     (channel) => {
       const tChannel = channel as Discord.GuildChannel;
-      return tChannel.name === COMMANDS_CHANNEL;
+      return COMMANDS_CHANNEL.includes(tChannel.name);
     }
-  ) as Discord.TextChannel;
-  voiceChannel && voiceChannel.join();
+  );
 
   handleDataUpdate(
     (bossData: BossDataType, bossName: string, action_type: ACTION_TYPES) => {
@@ -44,14 +54,16 @@ DiscordClient.once('ready', async () => {
       UpCommand.execute([floor], DiscordClient);
 
       if (action_type === 'NEW_REPORT') {
-        asteriosBotTextChannel.send(
+        sentMessage(
+          asteriosBotTextChannels,
           `Someone reported that ${bossName} just spawned.`
         );
 
         //gather everyone that reported this boss
         const usersReported = [];
         bossData.markedAsSpawned.map((userReported) => {
-          const guildMember = asteriosBotTextChannel.guild.members.cache.get(
+          const guildMember = findUserReportedFromAllChannels(
+            asteriosBotTextChannels,
             userReported
           );
 
@@ -63,7 +75,8 @@ DiscordClient.once('ready', async () => {
         });
 
         usersReported.length > 0 &&
-          asteriosBotTextChannel.send(
+          sentMessage(
+            asteriosBotTextChannels,
             `Please, thank following people for reporting... ${usersReported.join(
               ' ,'
             )}`
@@ -71,12 +84,39 @@ DiscordClient.once('ready', async () => {
       } else {
         DeathCommand.execute([floor], DiscordClient);
 
-        asteriosBotTextChannel.send(`${bossName} just died. Chest command is:`);
-        asteriosBotTextChannel.send(`${BossData[bossName].chest}`);
+        sentMessage(
+          asteriosBotTextChannels,
+          `${bossName} just died. Chest command is:`
+        );
+        sentMessage(asteriosBotTextChannels, `${BossData[bossName].chest}`);
       }
     }
   );
 });
+
+function findUserReportedFromAllChannels(
+  channels: Discord.Collection<string, Discord.Channel>,
+  username: string
+) {
+  let searchUser;
+  channels.map((channel) => {
+    const tChannel = channel as Discord.TextChannel;
+    if (tChannel.guild.members.cache.has(username)) {
+      searchUser = tChannel.guild.members.cache.get(username);
+    }
+  });
+
+  return searchUser;
+}
+
+function sentMessage(
+  channels: Discord.Collection<string, Discord.Channel>,
+  message: string
+) {
+  return channels.map((channel) =>
+    (channel as Discord.TextChannel).send(message)
+  );
+}
 
 function getAvailableCommands() {
   return [ListBossesCommand, ChestCommand, UpCommand, DeathCommand];
@@ -86,7 +126,7 @@ DiscordClient.on('message', async (message) => {
   if (message.author.bot) return;
 
   const messageChannel = message.channel as Discord.TextChannel;
-  if (messageChannel.name !== COMMANDS_CHANNEL) return;
+  if (COMMANDS_CHANNEL.includes(messageChannel.name) === false) return;
   if (!message.content.startsWith(prefix)) return;
 
   const commandBody = message.content.slice(prefix.length).split(' ');

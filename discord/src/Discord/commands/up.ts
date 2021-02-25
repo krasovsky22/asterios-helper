@@ -1,3 +1,4 @@
+import DiscordClient from '../client';
 import { findBossNameByFloor } from '../constants';
 
 import { Command } from './command-type';
@@ -20,11 +21,9 @@ const UpCommand: Command = {
       return 'Missing parameter.';
     }
 
-    const connection = client.voice.connections.first();
-
     const queueToPlay = [BOSS_SPAWN_SOUND];
 
-    playSoundQueue(connection, queueToPlay).then(() => {
+    playSoundQueue(DiscordClient, queueToPlay).then(() => {
       console.log('sounds done');
     });
 
