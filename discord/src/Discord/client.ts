@@ -145,12 +145,18 @@ DiscordClient.on('message', async (message) => {
       break;
     }
     case UpCommand.command: {
-      commandResponse = UpCommand.execute(args, DiscordClient);
+      commandResponse = null;
+      UpCommand.execute(args, DiscordClient).then(
+        (response) => response && message.channel.send(response)
+      );
       break;
     }
     case DeathCommand.command: {
-      commandResponse = DeathCommand.execute([...args], DiscordClient);
-      commandResponse += '\n' + ChestCommand.execute([...args]);
+      commandResponse = null;
+      DeathCommand.execute([...args], DiscordClient).then((textMessage) => {
+        commandResponse = textMessage + '\n' + ChestCommand.execute([...args]);
+        message.channel.send(commandResponse);
+      });
       break;
     }
     case ListBossesCommand.command: {

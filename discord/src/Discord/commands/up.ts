@@ -11,7 +11,7 @@ const UpCommand: Command = {
   command: 'up',
   description:
     'Will create voice notification what boss spawned. Parameters: cabrio, 3, 8, 11',
-  execute: (args, client) => {
+  execute: async (args, client) => {
     if (!args) {
       return 'Missing parameter.';
     }
@@ -23,10 +23,7 @@ const UpCommand: Command = {
 
     const queueToPlay = [BOSS_SPAWN_SOUND];
 
-    playSoundQueue(DiscordClient, queueToPlay).then(() => {
-      console.log('sounds done');
-    });
-
+    await playSoundQueue(DiscordClient, queueToPlay);
     const bossName = findBossNameByFloor(boss === 'cabrio' ? 0 : +boss);
 
     return `${bossName} just spawned. `;
