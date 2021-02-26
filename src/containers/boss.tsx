@@ -28,6 +28,19 @@ const BossContainer: React.FC<BossContainerType> = ({ chest, name, image, floor 
   const { bossData, markBossAsSpawned } = useContent(name)!;
   const { user } = useAuthContext();
 
+  let isReported = false;
+  if (bossData) {
+    const { markedAsSpawned } = bossData;
+
+    if (markedAsSpawned) {
+      if (user) {
+        isReported = markedAsSpawned.filter((userReported) => userReported !== user.id).length > 0;
+      } else {
+        isReported = markBossAsSpawned.length > 0;
+      }
+    }
+  }
+
   //copy into clipboard
   const handleOnClick = useCallback(() => {
     const tempInput = document.createElement("input");
@@ -112,7 +125,7 @@ const BossContainer: React.FC<BossContainerType> = ({ chest, name, image, floor 
   }
 
   return (
-    <BossCard title="Copy" onClick={handleOnClick}>
+    <BossCard title="Copy" onClick={handleOnClick} isActive={isReported}>
       <BossCard.Image src={image} alt={name}>
         {floor && <BossCard.BossFloor>Floor: {floor}</BossCard.BossFloor>}
       </BossCard.Image>

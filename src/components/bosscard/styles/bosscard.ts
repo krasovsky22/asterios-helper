@@ -1,7 +1,18 @@
 import styled from "styled-components/macro";
 import { ImageType } from "@components/common-types";
 
-export const Container = styled.div`
+export const Inner = styled.div`
+  margin: 10px;
+  display: flex;
+  flex-direction: row;
+  background-color: transparent;
+  width: 100%;
+`;
+
+export type ContainerType = {
+  isActive: boolean;
+};
+export const Container = styled.div<ContainerType>`
   color: #fff;
   width: 500px;
   width: 40%;
@@ -14,13 +25,23 @@ export const Container = styled.div`
   &:hover {
     transform: scale(1.1);
   }
-`;
-export const Inner = styled.div`
-  margin: 10px;
-  display: flex;
-  flex-direction: row;
-  background-color: transparent;
-  width: 100%;
+
+  ${Inner} {
+    ${({ isActive }) =>
+      isActive &&
+      `
+        animation: blinking 1s linear infinite;
+        outline: 5px solid white;
+    `}
+
+    /* animation: ${({ isActive }) =>
+      isActive ? "blinking" : "none"} blinking 1s linear infinite; */
+    @keyframes blinking {
+      50% {
+        outline-color: green;
+      }
+    }
+  }
 `;
 
 export const Image = styled.div<ImageType>`

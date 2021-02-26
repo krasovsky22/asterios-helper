@@ -15,12 +15,13 @@ import {
   ActionButtonsSection,
   ActionButtonSectionInner,
   ActionToggle,
+  ContainerType,
 } from "./styles/bosscard";
 
 const BossCard = ({
   children,
   ...rest
-}: WithChildrenType & { title: string; onClick: () => void }) => {
+}: WithChildrenType & ContainerType & { title: string; onClick: () => void }) => {
   return (
     <Container {...rest}>
       <Inner>{children}</Inner>
