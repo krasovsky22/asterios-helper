@@ -74,11 +74,6 @@ const BossContainer: React.FC<BossContainerType> = ({ chest, name, image, floor 
       setState({ ...state, isSpawning: true });
       return;
     }
-
-    if (name === "Boss Death Lord Hallate") {
-      console.log(name, now, respawnEndTime);
-    }
-
     if (now > respawnEndTime) {
       setState({ ...state, isSpawning: false, isSpawned: true });
       return;
@@ -117,7 +112,7 @@ const BossContainer: React.FC<BossContainerType> = ({ chest, name, image, floor 
   let color = "black";
 
   if (isSpawning) {
-    color = "orange";
+    color = "#ffde3b8f";
   }
 
   if (isSpawned) {
@@ -129,7 +124,11 @@ const BossContainer: React.FC<BossContainerType> = ({ chest, name, image, floor 
       <BossCard.Image src={image} alt={name}>
         {floor && <BossCard.BossFloor>Floor: {floor}</BossCard.BossFloor>}
       </BossCard.Image>
-      <BossCard.Content color={color}>
+      <BossCard.Content
+        backgroundColor={color}
+        opacity={isSpawning || isSpawned ? 1 : undefined}
+        color={isSpawning || isSpawned ? "black" : undefined}
+      >
         <BossCard.Title>{name}</BossCard.Title>
         <BossCard.DeathSection>
           <b>Killed at:</b>{" "}

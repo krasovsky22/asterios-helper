@@ -72,13 +72,16 @@ export const BossFloor = styled.div`
 `;
 
 export type ContentType = {
-  color: string;
+  backgroundColor: string;
+  opacity?: number;
+  color?: string;
 };
 export const Content = styled.div<ContentType>`
   display: flex;
   align-items: center;
-  background-color: ${({ color }) => color};
-  opacity: 0.5;
+  background-color: ${({ backgroundColor }) => backgroundColor};
+  opacity: ${({ opacity = 0.5 }) => opacity};
+  color: ${({ color = "white" }) => color};
   flex-grow: 1;
 `;
 
