@@ -25,7 +25,6 @@ const AuthenticateCallback: React.FC = () => {
     const user = await fetchAuthenticatedUser();
 
     user && setUser(user);
-    console.log(user);
 
     setState({ ...state, authorized: true });
   });
