@@ -25,6 +25,7 @@ export default function useContent(boss: BOSS_TYPE) {
       ?.firestore()
       .collection("bosses")
       .doc(boss)
+      console.log(boss)
       .onSnapshot((snapshot) => {
         setBossData(snapshot.data() as BossSnapshotDataType);
       });
